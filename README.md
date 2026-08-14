@@ -4,8 +4,6 @@
 
 A complete, modular framework for autonomous security research - reconnaissance, vulnerability discovery, PoC development, exploit writing, CVE weaponization, and bug bounty reporting. Built on the REACT (Reason → Act → Observe → Adapt) agent loop.
 
-**Keywords**: bug bounty · penetration testing · offensive security · ethical hacking · web application security · vulnerability scanner · vulnerability discovery · AI security agent · autonomous agent · security automation · red teaming · recon automation · subdomain enumeration · OSINT · CVE hunting · CVE exploit · exploit development · zero-day research · OWASP · XSS · SQL injection · SSRF · IDOR · API security · MCP server · opencode · Kali Linux · CTF solver · security research
-
 ---
 
 ## What's Included
@@ -294,3 +292,5 @@ MIT - use freely, modify as needed, credit appreciated.
 
 *acy v4.1 - Agentic Security Research Orchestrator*
 *REACT Framework | 3-File Skill Architecture | 4 Automation Engines | 50 Phases | 70+ Vulnerability Classes*
+
+bug bounty · penetration testing · offensive security · ethical hacking · web application security · vulnerability scanner · vulnerability discovery · AI security agent · autonomous agent · security automation · red teaming · recon automation · subdomain enumeration · OSINT · CVE hunting · CVE exploit · exploit development · zero-day research · OWASP · XSS · SQL injection · SSRF · IDOR · API security · MCP server · opencode · Kali Linux · CTF solver · security research
