@@ -1,8 +1,10 @@
-# acy — Agentic Security Research Orchestrator
+# acy - Agentic Security Research Orchestrator
 
 **Version**: v4.1 | **Platform**: [opencode](https://opencode.ai) | **License**: MIT
 
-A complete, modular framework for autonomous security research — reconnaissance, vulnerability discovery, PoC development, exploit writing, CVE weaponization, and bug bounty reporting. Built on the REACT (Reason → Act → Observe → Adapt) agent loop.
+A complete, modular framework for autonomous security research - reconnaissance, vulnerability discovery, PoC development, exploit writing, CVE weaponization, and bug bounty reporting. Built on the REACT (Reason → Act → Observe → Adapt) agent loop.
+
+**Keywords**: bug bounty · penetration testing · offensive security · ethical hacking · web application security · vulnerability scanner · vulnerability discovery · AI security agent · autonomous agent · security automation · red teaming · recon automation · subdomain enumeration · OSINT · CVE hunting · CVE exploit · exploit development · zero-day research · OWASP · XSS · SQL injection · SSRF · IDOR · API security · MCP server · opencode · Kali Linux · CTF solver · security research
 
 ---
 
@@ -74,10 +76,10 @@ acy/
 
 ### 1. Prerequisites
 
-- **opencode** — [Install opencode](https://opencode.ai)
-- **Python 3.10+** — for MCP automation engines
-- **Node.js 18+** — for MCP server dependencies
-- **Kali Linux** (recommended) — for security tools (nmap, sqlmap, gobuster, etc.)
+- **opencode** - [Install opencode](https://opencode.ai)
+- **Python 3.10+** - for MCP automation engines
+- **Node.js 18+** - for MCP server dependencies
+- **Kali Linux** (recommended) - for security tools (nmap, sqlmap, gobuster, etc.)
 
 ### 2. Clone & Configure
 
@@ -127,10 +129,10 @@ opencode
 Every action follows: **REASON → ACT → OBSERVE → ADAPT**
 
 ```
-REASON   — Understand target, plan attack, map CVEs
-ACT      — Execute payloads, run tools, deploy exploits
-OBSERVE  — Analyze responses, check OAST callbacks, structural DOM analysis
-ADAPT    — Refine strategy based on observations
+REASON   - Understand target, plan attack, map CVEs
+ACT      - Execute payloads, run tools, deploy exploits
+OBSERVE  - Analyze responses, check OAST callbacks, structural DOM analysis
+ADAPT    - Refine strategy based on observations
 ```
 
 ### 3-File Skill Pattern
@@ -286,9 +288,9 @@ See `opencode.jsonc` for full configuration options including Burp Suite integra
 
 ## License
 
-MIT — use freely, modify as needed, credit appreciated.
+MIT - use freely, modify as needed, credit appreciated.
 
 ---
 
-*acy v4.1 — Agentic Security Research Orchestrator*
+*acy v4.1 - Agentic Security Research Orchestrator*
 *REACT Framework | 3-File Skill Architecture | 4 Automation Engines | 50 Phases | 70+ Vulnerability Classes*
