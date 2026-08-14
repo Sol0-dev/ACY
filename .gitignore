@@ -1,0 +1,45 @@
+# acy — Agentic Security Research Orchestrator
+# .gitignore — public repo (no per-target state, no findings, no runtime data)
+
+# Runtime dependencies
+node_modules/
+__pycache__/
+*.pyc
+.opencode/package-lock.json
+
+# Per-session state (regenerated at runtime — see essentials/*.example templates)
+essentials/STATE_*.md
+essentials/LOOP_STATE_*.md
+essentials/TARGET.env
+essentials/oast_registry.json
+essentials/oast_registry.json.lock
+essentials/findings_log.jsonl
+essentials/session_log.jsonl
+essentials/poc_registry.jsonl
+essentials/CVE_QUEUE.json
+essentials/TECH_FINGERPRINT.json
+essentials/LEADERBOARD.json
+essentials/DATASET_STATE.json
+essentials/MEMORY.md
+
+# Per-target runtime data (never commit findings/recon/evidence)
+findings/
+fullrecon/
+images/
+notes/
+scripts/
+raw/
+poc/
+dataset/
+flags/
+
+# Local tooling
+.obsidian/
+.playwright-mcp/
+
+# Temp
+*.tmp
+*.log
+*.swp
+*~
+.DS_Store

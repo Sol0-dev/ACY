@@ -1,0 +1,53 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "kali-mcp": {
+      "type": "local",
+      "command": ["mcp-server", "--server", "http://127.0.0.1:9999/"],
+      "environment": {
+        "KALI_TOOLS_PATH": "/usr/bin:/usr/sbin:/usr/local/bin"
+      },
+      "enabled": true,
+      "description": "Kali Linux tools via MCP — nmap, sqlmap, gobuster, hydra, nikto, wpscan, etc. Requires the kali MCP server running on port 9999."
+    },
+    "caido": {
+      "type": "local",
+      "command": ["/home/YOUR_USERNAME/caido-mcp-server/caido-mcp-server", "serve", "-u", "http://127.0.0.1:8080"],
+      "environment": {
+        "CAIDO_URL": "http://127.0.0.1:8080"
+      },
+      "enabled": true,
+      "description": "Caido MCP — proxy history (HTTPQL), replay, findings, sitemap, scopes, workflows. EDIT THE BINARY PATH to your install. Caido must run on 127.0.0.1:8080."
+    },
+    "firefox-devtools": {
+      "type": "local",
+      "command": ["npx", "firefox-devtools-mcp", "--connectExisting", "--marionettePort", "2828", "--enableScript"],
+      "enabled": true,
+      "description": "Firefox DevTools MCP — DOM inspection, network monitoring, JS execution. Requires Firefox with remote debugging on port 2828."
+    },
+    "playwright": {
+      "type": "local",
+      "command": ["npx", "@playwright/mcp@latest", "--config", "mcp/playwright_mcp_config.json", "--no-sandbox"],
+      "enabled": true,
+      "description": "Playwright MCP — headed browser automation, screenshots, page interaction. Config path is relative to this repo root."
+    },
+    "burp": {
+      "type": "local",
+      "command": ["/usr/bin/java", "-jar", "mcp-proxy.jar", "--sse-url", "http://127.0.0.1:9876/"],
+      "environment": {
+        "BURP_PROXY_URL": "http://127.0.0.1:8080"
+      },
+      "enabled": false,
+      "description": "Burp Suite MCP proxy — HTTP traffic interception and manipulation. Disabled by default."
+    },
+    "oc-engines": {
+      "type": "local",
+      "command": ["python3", "mcp/mcp_server.py"],
+      "enabled": true,
+      "description": "acy v3.3 Automation Engines — OAST polling, DOM structural analysis, recon saliency filtering, payload mutation. Pure Python, run from this repo root."
+    }
+  },
+  "skills": {
+    "paths": [".opencode/skills"]
+  }
+}
