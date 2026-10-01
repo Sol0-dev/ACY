@@ -259,56 +259,64 @@ See `opencode.jsonc` for full configuration options including Burp Suite integra
 
 ## Knowledge Ingest Workflow — Raw → Wiki → Skills
 
-The core feedback loop that makes acy smarter with every session. Ingest a source document (`raw/`), distill it into a wiki technique note, then weave the new pattern into the matching skill **additively** — old content is never removed, new knowledge is appended alongside it. Run the wiki/skill lint after every update.
+This is how acy gets smarter over time. When you learn something new (a writeup, a CVE, a technique you discovered), you feed it in through three steps. Each step builds on the last, and nothing you already have is ever thrown away.
+
+### The Flow (3 steps)
 
 ```
-raw/ (source doc, immutable)
-  → wiki/techniques/{note}.md   (YAML frontmatter: id, date, type, status, confidence, tags, links)
-  → .opencode/skills/{base}-{discovery|hunt|reproduce}/SKILL.md   (ADDITIVE refine, never delete)
-  → verify zero-loss (git diff shows only added lines)
-  → lint wiki + skills
+1. SAVE   → drop the source document in raw/          (your reference, never edited)
+2. LEARN  → distill it into a wiki technique note     (what you learned, in your own words)
+3. SHARE  → weave it into the matching skill file     (so the agent uses it next time)
 ```
 
-### Sample Prompts
+That's it. The wiki holds *what you know*. The skills hold *what the agent does*. raw/ holds *where it came from*.
+
+### Step-by-step
+
+| Step | Action | Example prompt |
+|------|--------|----------------|
+| 1 | **Save** the source doc | `"save this writeup to raw/ssrf.md"` |
+| 2 | **Learn** — turn it into a wiki note | `"create a wiki technique note from raw/ssrf.md"` |
+| 3 | **Share** — add it to the skill, WITHOUT deleting anything | `"add the SSRF technique from the wiki to the injection skills, keep all existing content"` |
+| 4 | **Check** — make sure nothing was lost | `"show git diff to confirm no content was removed from the skill"` |
+| 5 | **Lint** — make sure everything is clean | `"lint the wiki and skills"` |
+
+### Ready-to-paste Prompts
 
 ```
-"ingest raw/SSRF.md into wiki"
-    → Create wiki/techniques/ssrf.md with frontmatter; link from wiki/index.md
+# One-liner: do the whole flow in one shot
+"ingest raw/ssrf.md → wiki technique note → weave into injection skills additively → lint"
 
-"add the new technique from wiki/techniques/xxe.md to the injection skills
- without removing anything"
-    → Weave new content INTO the existing DISCOVERY/HUNT/REPRODUCE structure.
-      Preserve every existing line. New knowledge complements, never displaces.
+# Just the wiki step
+"ingest raw/ssrf.md into the wiki"
 
-"update clientside-hunt with the CSWSH pattern from the wiki, additive only,
- then show me git diff to confirm zero content loss"
-    → Append/merge new payloads + checks; verify no removed content lines.
+# Just the skill step (the important one)
+"update the injection skills with the new SSRF pattern from the wiki,
+ but DO NOT remove or rewrite any existing content — append and merge only"
 
-"ingest this: {paste writeup / CVE details} → wiki technique note → weave into
- the matching skill additively → lint"
-    → Full pipeline: raw → wiki → skill (additive) → lint.
+# Verify nothing was lost
+"git diff the skill files — confirm only added lines, no removed content"
 
-"add CVE-XXXX-XXXXX to the CVE_QUEUE and the matching skill hunt block,
+# Add a CVE while keeping the skill intact
+"add CVE-2026-XXXX to CVE_QUEUE.json and the matching hunt block in the skill,
  keep all existing content"
-    → Version→CVE mapping + additive skill update.
 
-"lint the wiki and skills"
-    → Verify YAML frontmatter (id, date, type, status, confidence, tags, links),
-      balanced code fences, no broken wiki links, registry counts match,
-      and every skill file still parses cleanly.
-
-"check skill registry vs .opencode/skills for missing/extra entries"
-    → Compare skill_registry.json bases/files/phases against actual skill files.
+# Lint everything
+"lint the wiki and skills: check frontmatter, code fences, wiki links,
+ and skill registry counts"
 ```
 
-### Additive Refinement Rules (from AGENTS.md)
+### The Golden Rule: Additive, Never Destructive
 
-1. **Preserve Everything** — every existing line/block/payload in a skill stays. Prior content is the floor.
-2. **Refine, Don't Append-Disconnect** — weave new knowledge into the existing structure, mixing old + new technique + fresh payloads into one flow (update the `ORDER` line at the top).
-3. **Verify Zero Loss** — before saving, `git diff` the skill and confirm no removed content lines (headings may be re-titled; body content may NOT be removed).
-4. **Keep References** — preserve original tool invocations and script paths; add new tooling alongside.
-5. **Header Hygiene** — convert emdashes (—) to plain hyphens (-) in edited sections.
-6. **Verify After Edit** — re-check fences are balanced, no orphaned code blocks, then lint.
+When the agent updates a skill, it **must** follow this rule:
+
+- **Keep everything** that's already in the file. Old content is the floor, not disposable.
+- **Weave in the new** knowledge alongside the old — same section, new payloads, updated `ORDER` line.
+- **Never delete** existing lines, blocks, payloads, or references. Headings can be re-titled; body content cannot be removed.
+- **Verify** with `git diff` that the update only *added* lines before finishing.
+- **Lint** after every skill update.
+
+If a prompt ever asks the agent to "rewrite" or "replace" a skill, that's wrong — always ask it to **add** and **merge** instead.
 
 ---
 
