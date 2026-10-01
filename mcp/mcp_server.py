@@ -17,18 +17,17 @@ Registered tools:
 Protocol: MCP JSON-RPC 2.0 over stdin/stdout (per opencode spec).
 """
 
-import sys
 import json
 import os
+import sys
 
 # Ensure we can import sibling modules
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from oast_manager import action_generate, action_poll, action_cleanup
 from dom_analyzer import analyze_divergence
-from saliency_filter import process_lines
+from oast_manager import action_cleanup, action_generate, action_poll
 from payload_mutator import STRATEGIES
-
+from saliency_filter import process_lines
 
 # ---------------------------------------------------------------------------
 # Tool definitions (exposed to opencode via tools/list)
@@ -210,7 +209,7 @@ def _dispatch(method: str, params: dict, request_id) -> str:
 
         except KeyError as e:
             return _err(request_id, -32602, f"Missing required parameter: {e}")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - tool errors must always be returned to client
             return _err(request_id, -32603, f"Tool execution error: {e}")
 
     elif method == "initialize":

@@ -18,3 +18,7 @@ links:
 - Wiki scaffold initialized
 - Foundation setup complete: AGENTS.md, 43 skill files, 4 MCP engines
 - Ready for first target engagement
+
+---
+
+*All future operations will be logged here chronologically.*

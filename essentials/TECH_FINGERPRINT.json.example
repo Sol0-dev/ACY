@@ -1,0 +1,10 @@
+{
+  "target": "example.com",
+  "updated": "2026-01-01T00:00:00Z",
+  "surfaces": {
+    "www.example.com": {
+      "tech": ["technology", "version"],
+      "note": "context"
+    }
+  }
+}

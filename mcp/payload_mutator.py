@@ -29,16 +29,13 @@ Usage:
   python3 mcp/payload_mutator.py --seed "<script>alert(1)</script>" --all > mutations.json
 """
 
-import sys
-import json
-import os
-import re
 import argparse
 import base64
 import html
-from typing import Callable
-from urllib.parse import quote, quote_plus
-
+import json
+import re
+import sys
+from collections.abc import Callable
 
 # ---------------------------------------------------------------------------
 # Mutation strategy implementations
@@ -105,7 +102,7 @@ def _bypass_waf(seed: str) -> str:
     variants.append({"technique": "case_alternation", "payload": alt_case})
 
     # 2. Zero-width space insertion between every character
-    zwsp_variant = "​".join(seed)
+    zwsp_variant = "\u200b".join(seed)
     variants.append({"technique": "zero_width_spaces", "payload": zwsp_variant})
 
     # 3. HTML comment injection within the payload body
@@ -123,7 +120,7 @@ def _bypass_waf(seed: str) -> str:
 
     # 6. Mixed: case alternation + zero-width chars
     mixed_alt = "".join(
-        (c.upper() if i % 2 else c.lower()) + "​"
+        (c.upper() if i % 2 else c.lower()) + "\u200b"
         for i, c in enumerate(seed)
     )
     variants.append({"technique": "case_alt_plus_zwsp", "payload": mixed_alt})
@@ -308,7 +305,7 @@ def main() -> None:
                 "payload": output,
                 "length": len(output),
             }
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - record per-strategy error, keep processing others
             results["mutations"][strategy_name] = {
                 "error": str(exc),
             }

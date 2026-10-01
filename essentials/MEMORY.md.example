@@ -1,0 +1,16 @@
+# MEMORY.md.example — Cross-Session Persistent Memory
+# Copy to MEMORY.md as your global memory accumulates.
+
+# MEMORY — Cross-Session Persistent Memory
+
+## Recurring Patterns
+- {pattern observed across targets}
+
+## Dead Ends
+- {approach that failed and why}
+
+## Tooling Preferences
+- {MCP servers, workflows that work}
+
+## Open Threads
+- {unfinished lines of investigation}

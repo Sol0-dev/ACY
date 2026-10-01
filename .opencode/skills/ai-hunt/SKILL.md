@@ -3283,7 +3283,7 @@ python3 - << 'PYEOF'
 import json, os
 
 SLUG = os.environ.get('SLUG', 'target')
-RESULTS_DIR = f"/home/kali/agents/finetune/fullrecon/{SLUG}"
+RESULTS_DIR = f"fullrecon/{SLUG}"  # portable: run from repo root (originally /home/kali/agents/finetune)
 
 # Parse augustus results
 try:

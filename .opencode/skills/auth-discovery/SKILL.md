@@ -96,7 +96,7 @@ Parameter Indicators:
 
 ---
 
-## Phase 12: Broken Access Control — CIA: C:H I:H
+## Phase 12: Broken Access Control - CIA: C:H I:H
 
 ```
 TRIGGER: Phase 2 assigns access-control, or JS signals isAdmin client-side gates.
@@ -122,6 +122,40 @@ Parameter Indicators:
 - role, isAdmin, userType, access_level, permission, group
 - X-Original-URL, X-Rewrite-URL, X-Forwarded-For headers
 - HTTP method override headers: X-HTTP-Method-Override
+
+### Discovery Pattern - Loose Asset Scope Validation (platform report submission)
+**Source:** [[scope-validation-bypass]] - loose asset scope-match validation (validated LOW on live platform)
+
+```
+PRINCIPLE: Report/issue submission endpoints that accept an affected_asset list
+  must enforce EXACT-MATCH against the program's declared scope. Many platforms
+  validate with a loose domain-suffix regex instead, letting a hunter submit a
+  report against an undeclared (out-of-scope) asset. CWE-284.
+
+DISCOVERY SIGNALS:
+  - Report/issue submission endpoint: POST {api}/programs/report, /issues, /submissions
+  - Params: affected_asset, affected_assets, asset, target (array of URL strings)
+  - A program-scope endpoint (GET {api}/programs/{uuid}) returns the authoritative
+    affected_assets list to compare against
+  - JS: report form builds asset array; draft-save mode proved acceptance (save_as_draft=true)
+
+THREE-CONTROL TEST (the discriminator):
+  control-1 (declared in-scope)     -> accepted (baseline works)
+  control-2 (foreign domain)        -> rejected "Invalid asset url!" (validation EXISTS)
+  control-3 (family subdomain NOT in declared list, e.g. https://blog.target.com)
+      -> ACCEPTED while control-2 is rejected  => loose suffix-match, not exact scope-match = BUG
+```
+
+### Validation Checklist (scope-validation)
+
+```
+□ authoritative scope list fetched from program detail API (not frontend)
+□ control-1 declared in-scope asset accepted (baseline)
+□ control-2 clearly-foreign domain rejected (e.g. https://evil.com)
+□ control-3 undeclared family subdomain accepted while control-2 rejected
+□ acceptance proven via draft save (200 + draft_uuid), not a soft error
+□ severity expectation set LOW (control gap, no direct data impact)
+```
 
 ---
 

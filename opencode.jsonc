@@ -27,7 +27,7 @@
     },
     "playwright": {
       "type": "local",
-      "command": ["npx", "@playwright/mcp@latest", "--config", "mcp/playwright_mcp_config.json", "--no-sandbox"],
+      "command": ["npx", "@playwright/mcp@0.0.82", "--config", "mcp/playwright_mcp_config.json", "--no-sandbox"],
       "enabled": true,
       "description": "Playwright MCP — headed browser automation, screenshots, page interaction. Config path is relative to this repo root."
     },

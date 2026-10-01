@@ -1,0 +1,1 @@
+{"ts": "2026-01-01T00:00:00Z", "target": "example.com", "severity": "medium", "vuln_class": "auth/session", "title": "Example finding title", "cwe": "CWE-XXX", "cvss": "X.X", "path": "findings/example_com/medium/auth/example-title/", "confidence": 5, "status": "confirmed"}

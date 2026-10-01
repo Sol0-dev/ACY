@@ -1,0 +1,2 @@
+# poc_registry.jsonl — PoC lifecycle tracker (one JSON per line)
+{"ts": "2026-01-01T00:00:00Z", "target": "example.com", "cve": "CVE-2026-0000", "status": "pulled", "source_repo": "https://github.com/author/repo", "commit": "abc123", "adapted": false, "tested": false, "finding_path": ""}

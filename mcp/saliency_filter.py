@@ -22,15 +22,12 @@ Input formats:
   - Raw HTML/JSON response body (auto-detected)
 """
 
-import sys
+import argparse
 import json
 import os
 import re
-import argparse
-from urllib.parse import urlparse, parse_qs
-from typing import Optional
-from collections import Counter
-
+import sys
+from urllib.parse import urlparse
 
 # ---------------------------------------------------------------------------
 # Static rule sets

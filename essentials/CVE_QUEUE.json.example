@@ -1,0 +1,15 @@
+{
+  "target": "example.com",
+  "updated": "2026-01-01T00:00:00Z",
+  "queue": [
+    {
+      "tech": "next",
+      "version": "13.4.19",
+      "surface": "example.com (Next.js App Router)",
+      "cves": [
+        {"id": "GHSA-example", "type": "Description", "intro": "version", "fixed": "version", "exploitable": "conditional - note"}
+      ],
+      "status": "fingerprinted - exploitability gate pending"
+    }
+  ]
+}

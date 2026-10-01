@@ -32,6 +32,8 @@ raw/
 poc/
 dataset/
 flags/
+attack_vectors/
+crown_jewels/
 
 # Local tooling
 .obsidian/
@@ -43,3 +45,19 @@ flags/
 *.swp
 *~
 .DS_Store
+
+# ---- Scaffold exceptions (keep directory structure + READMEs in repo) ----
+!findings/README.md
+!fullrecon/README.md
+!raw/README.md
+!wiki/README.md
+!images/README.md
+!notes/README.md
+!scripts/README.md
+!poc/README.md
+!dataset/README.md
+!attack_vectors/README.md
+!crown_jewels/README.md
+!essentials/STATE_TEMPLATE.md
+!essentials/LOOP_STATE_TEMPLATE.md
+!essentials/*.example

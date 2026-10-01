@@ -27,14 +27,11 @@ v4.0 — Dataset Pipeline for Offensive Security Model Fine-Tuning
 import argparse
 import hashlib
 import json
-import os
 import re
 import secrets
 import sys
-import time
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
-from difflib import SequenceMatcher
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -130,8 +127,7 @@ def load_jsonl(filepath: Path) -> list:
 def write_jsonl(filepath: Path, entries: list):
     filepath.parent.mkdir(parents=True, exist_ok=True)
     with open(filepath, 'w', encoding='utf-8') as f:
-        for entry in entries:
-            f.write(json.dumps(entry, ensure_ascii=False) + '\n')
+        f.writelines(json.dumps(entry, ensure_ascii=False) + '\n' for entry in entries)
 
 
 def ensure_dirs():
@@ -239,7 +235,7 @@ def action_format(args):
         try:
             with open(json_file, 'r') as f:
                 raw = json.load(f)
-        except (json.JSONDecodeError, IOError):
+        except (OSError, json.JSONDecodeError):
             skipped += 1
             continue
 
@@ -531,7 +527,7 @@ def action_split(args):
                 all_by_type[dataset_type].append(entry)
 
     train, val, test = [], [], []
-    for dtype, entries in all_by_type.items():
+    for entries in all_by_type.values():
         shuffled = entries[:]
         random.shuffle(shuffled)
         n = len(shuffled)

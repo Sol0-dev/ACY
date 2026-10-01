@@ -1,0 +1,11 @@
+{
+  "5d29a1d1e7145878": {
+    "callback_url": "5d29a1d1e7145878.oast.interactsh.com",
+    "correlation_id": "example_ssrf_test",
+    "created_at": "2026-01-01T00:00:00.000000+00:00",
+    "interactions": [],
+    "last_polled_at": null,
+    "status": "pending",
+    "triggered": false
+  }
+}

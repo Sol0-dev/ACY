@@ -198,13 +198,35 @@
       "description": "Run a prompt or skill repeatedly on a fixed interval or self-paced schedule. Claude Code /loop equivalent.",
       "status": "active",
       "version": "1.0"
+    },
+    {
+      "base": "attack-vectors",
+      "name": "Attack Vector Mapping (Phase 4)",
+      "file": ".opencode/skills/attack-vectors/SKILL.md",
+      "type": "phase",
+      "description": "Bug bounty hunter mindset. Catalog endpoints, params, weird behaviors, and info leaks into attack_vectors/{slug}/av.md. Medium bugs are valid; every vector chain-tagged toward the crown jewel.",
+      "phases": [4],
+      "vuln_classes": ["attack-vector-mapping", "weirdness-catalog", "info-leak-enumeration", "chain-primitive-tagging"],
+      "status": "active",
+      "version": "1.0"
+    },
+    {
+      "base": "crown-jewels",
+      "name": "Crown Jewels Goal Definition (Phase 5)",
+      "file": ".opencode/skills/crown-jewels/SKILL.md",
+      "type": "phase",
+      "description": "Malicious attacker mindset. Define the worst-case goal in crown_jewels/{slug}/cj.md, work backward to av.md primitives, hunt the gap, and find bugs while using the application.",
+      "phases": [5],
+      "vuln_classes": ["crown-jewel-definition", "backward-primitive-mapping", "application-dogfooding", "bug-discovery"],
+      "status": "active",
+      "version": "1.0"
     }
   ],
   "metadata": {
-    "total_skill_bases": 13,
-    "total_utility_skills": 2,
-    "total_skill_files": 41,
-    "total_phases": 50,
+    "total_skill_bases": 15,
+    "total_utility_skills": 4,
+    "total_skill_files": 43,
+    "total_phases": 51,
     "vulnerability_classes_covered": 70,
     "file_pattern": "SKILL-{BASE}-{DISCOVERY|HUNT|REPRODUCE}.md",
     "cross_cutting_skills": ["SKILL-INFODISCLOSURE", "SKILL-CHAIN", "SKILL-REPORT", "SKILL-DATASET", "SKILL-CTF"],

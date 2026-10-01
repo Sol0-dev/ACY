@@ -1,6 +1,6 @@
 # acy - Agentic Security Research Orchestrator
 
-**Version**: v4.1 | **Platform**: [opencode](https://opencode.ai) | **License**: MIT
+**Version**: v4.3 | **Platform**: [opencode](https://opencode.ai) | **License**: MIT
 
 A complete, modular framework for autonomous security research - reconnaissance, vulnerability discovery, PoC development, exploit writing, CVE weaponization, and bug bounty reporting. Built on the REACT (Reason → Act → Observe → Adapt) agent loop.
 
@@ -10,14 +10,16 @@ A complete, modular framework for autonomous security research - reconnaissance,
 
 ```
 acy/
-├── AGENTS.md                    ← Master orchestrator (50 phases, 70+ vuln classes)
+├── AGENTS.md                    ← Master orchestrator (51 phases, 70+ vuln classes)
 ├── opencode.jsonc               ← MCP server configuration
-├── .opencode/skills/            ← 43 modular skill files (3-file pattern per vuln class)
+├── .opencode/skills/            ← 43+ modular skill files (3-file pattern per vuln class)
 │   ├── {name}-discovery/SKILL.md    ← Surface detection, param identification
 │   ├── {name}-hunt/SKILL.md         ← Active testing, payload firing
 │   ├── {name}-reproduce/SKILL.md    ← Confirmation, PoC, exploit adaptation
 │   ├── goal/SKILL.md                ← Autonomous completion loop (/goal)
-│   └── loop/SKILL.md                ← Recurring scheduled prompt (/loop)
+│   ├── loop/SKILL.md                ← Recurring scheduled prompt (/loop)
+│   ├── attack-vectors/SKILL.md      ← Phase 4 attack vector mapping
+│   └── crown-jewels/SKILL.md        ← Phase 5 crown jewel goal definition
 ├── mcp/                         ← 4 automation engines (Python)
 │   ├── mcp_server.py            ← MCP server wrapper (exposes engines as tools)
 │   ├── oast_manager.py          ← Blind vuln callback polling (OAST)
@@ -58,6 +60,8 @@ acy/
 ├── scripts/{target-slug}/       ← Test scripts & exploit scripts
 ├── findings/{target-slug}/      ← Confirmed findings
 │   └── {critical|high|medium|low}/{vuln-class}/{title}/
+├── attack_vectors/{target-slug}/← Phase 4 attack vector map (av.md)
+├── crown_jewels/{target-slug}/  ← Phase 5 crown jewels (cj.md)
 ├── raw/                         ← Source documents (CVEs, writeups, PoC repos)
 ├── poc/                         ← Proof of concept artifacts
 └── dataset/                     ← Training data pipeline
@@ -160,43 +164,45 @@ Or use the unified runner:
 ./mcp/runner.sh mutate --seed "<script>alert(1)</script>" --strategy bypass_waf
 ```
 
-### 50 Phases
+### 51 Phases
 
 | Phase | Name | Purpose |
 |-------|------|---------|
 | 0 | Recon | Target init, JS intel, external leaks, open dir enum |
 | 1 | App Understanding | Tech fingerprinting, version→CVE mapping |
 | 2 | Surface Classification | Prioritize by CVE exploitability |
-| 3-41 | Per-Vuln Testing | DISCOVERY → HUNT → REPRODUCE per vuln class |
-| 42 | Chain Engine | Multi-class escalation |
-| 43 | Subdomain Expansion | Cross-domain testing |
-| 44 | Verification | Pre-submit hardening |
-| 45 | Loop & Self-Improvement | Restart with fresh recon |
-| 46 | CI/CD Security | DevOps & container security |
-| 47 | AI/LLM Security | Prompt injection, MCP abuse |
-| 48 | CVE Weaponization | Version→CVE→PoC→adapt→exploit |
+| 3 | CVE Weaponization | Version→CVE→PoC→adapt→exploit (PRIMARY WINDOW after Phase 1) |
+| 4 | Attack Vectors | Bug-bounty mindset map → attack_vectors/{slug}/av.md |
+| 5 | Crown Jewels | Malicious mindset goals → crown_jewels/{slug}/cj.md |
+| 6-44 | Per-Vuln Testing | DISCOVERY → HUNT → REPRODUCE per vuln class |
+| 45 | Chain Engine | Multi-class escalation |
+| 46 | Subdomain Expansion | Cross-domain CVE surfaces |
+| 47 | Verification | Pre-submit hardening |
+| 48 | Loop & Self-Improvement | Restart with fresh recon |
+| 49 | CI/CD Security | DevOps & container security |
+| 50 | AI/LLM Security | Prompt injection, MCP abuse |
 
 ---
 
-## Skills (43 files)
+## Skills (43+ files)
 
 | Skill Base | Vuln Classes | Phases |
 |------------|-------------|--------|
-| RECON | Reconnaissance, Subdomain Takeover, Dependency Confusion | 0, 36-37, 39, 43 |
-| INTEL | JS Intelligence, Tech Fingerprinting, App Understanding | 0-1 |
-| INJECTION | SQLi, NoSQLi, SSRF, XXE, SSTI, CMDi, LFI, RFI, Deserialization, Smuggling, Cache, CRLF, HPP, GraphQL, LDAP, XPath | 3-4, 7-10, 16-19, 22-24, 31-32, 38, 40-41 |
-| AUTH | IDOR, Access Control, Auth/Session, JWT, OAuth, API Security | 11-15, 34 |
-| CLIENTSIDE | XSS, CSRF, File Upload, Open Redirect, Clickjacking, CORS, Prototype Pollution, DOM Clobbering, WebSocket | 5-6, 17, 20-21, 25, 29-30, 33 |
-| LOGIC | Business Logic, Race Conditions, Mass Assignment, ReDoS | 26-28, 35 |
-| INFODISCLOSURE | Info Disclosure, Config Leak, Secret Exposure | 39, cross-cutting |
-| DEVOPS | CI/CD Injection, Container Escape, Workflow Injection | 46 |
-| CHAIN | Attack Chain Execution, Multi-Class Escalation | 42 |
-| REPORT | PoC Development, Report Writing, Triage | 44 |
-| AI | Prompt Injection, MCP Abuse, RAG Injection, Agent Hijacking | 47 |
+| RECON | Reconnaissance, Subdomain Takeover, Dependency Confusion | 0, 39-40, 42, 46 |
+| INTEL | JS Intelligence, Tech Fingerprinting, App Understanding | 0-1, 3 |
+| INJECTION | SQLi, NoSQLi, SSRF, XXE, SSTI, CMDi, LFI, RFI, Deserialization, Smuggling, Cache, CRLF, HPP, GraphQL, LDAP, XPath | 6-7, 10-13, 19-22, 25-27, 34-35, 41, 43-44 |
+| AUTH | IDOR, Access Control, Auth/Session, JWT, OAuth, API Security | 14-18, 37 |
+| CLIENTSIDE | XSS, CSRF, File Upload, Open Redirect, Clickjacking, CORS, Prototype Pollution, DOM Clobbering, WebSocket | 8-9, 20, 23-24, 28, 32-33, 36 |
+| LOGIC | Business Logic, Race Conditions, Mass Assignment, ReDoS | 29-31, 38 |
+| INFODISCLOSURE | Info Disclosure, Config Leak, Secret Exposure | 42, cross-cutting |
+| DEVOPS | CI/CD Injection, Container Escape, Workflow Injection | 49 |
+| CHAIN | Attack Chain Execution, Multi-Class Escalation | 45 |
+| REPORT | PoC Development, Report Writing, Triage | 47 |
+| AI | Prompt Injection, MCP Abuse, RAG Injection, Agent Hijacking | 50 |
 | DATASET | Training Data Capture, Format, Validate, Export | cross-cutting |
-| CTF | CTF Challenge Solver (TryHackMe, HackTheBox) | 49 |
+| CTF | CTF Challenge Solver (TryHackMe, HackTheBox) | 51 |
 
-**+ 2 utility skills**: `/goal` (autonomous completion) and `/loop` (recurring scheduled prompt)
+**+ 4 utility skills**: `/goal` (autonomous completion), `/loop` (recurring scheduled prompt), `/attack-vectors` (Phase 4), `/crown-jewels` (Phase 5)
 
 ---
 
@@ -206,7 +212,7 @@ Or use the unified runner:
 "let's hunt"              → Load state, resume hunting
 "hunt for [vuln]"         → Prioritize that vuln class
 "fingerprint [URL]"       → Extract tech + versions, map to CVEs
-"scan for CVEs"           → Run Phase 48 on fingerprinted tech
+"scan for CVEs"           → Run Phase 3 CVE weaponization on fingerprinted tech
 "look for leaks"          → Search paste sites, GitHub, Shodan
 "let's look at [URL]"     → Analyze that surface
 "test [endpoint]"         → Full playbook on that endpoint
@@ -290,7 +296,7 @@ MIT - use freely, modify as needed, credit appreciated.
 
 ---
 
-*acy v4.1 - Agentic Security Research Orchestrator*
-*REACT Framework | 3-File Skill Architecture | 4 Automation Engines | 50 Phases | 70+ Vulnerability Classes*
+*acy v4.3 - Agentic Security Research Orchestrator*
+*REACT Framework | 3-File Skill Architecture | 4 Automation Engines | 51 Phases | 70+ Vulnerability Classes*
 
 bug bounty · penetration testing · offensive security · ethical hacking · web application security · vulnerability scanner · vulnerability discovery · AI security agent · autonomous agent · security automation · red teaming · recon automation · subdomain enumeration · OSINT · CVE hunting · CVE exploit · exploit development · zero-day research · OWASP · XSS · SQL injection · SSRF · IDOR · API security · MCP server · opencode · Kali Linux · CTF solver · security research

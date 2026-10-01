@@ -31,47 +31,49 @@ _{Target MOCs will appear here as you begin testing.}_
 ### Vuln Class → Skill Mapping
 | Vuln | Skill | Phase |
 |------|-------|-------|
-| SQLi | INJECTION | 3 |
-| NoSQLi | INJECTION | 4 |
-| XSS | CLIENTSIDE | 5 |
-| CSRF | CLIENTSIDE | 6 |
-| SSRF | INJECTION | 7 |
-| XXE | INJECTION | 8 |
-| SSTI | INJECTION | 9 |
-| CMDi | INJECTION | 10 |
-| IDOR | AUTH | 11 |
-| Access Control | AUTH | 12 |
-| Auth/Session | AUTH | 13 |
-| JWT | AUTH | 14 |
-| OAuth | AUTH | 15 |
-| Deserialization | INJECTION | 16 |
-| File Upload | CLIENTSIDE | 17 |
-| LFI | INJECTION | 18 |
-| RFI | INJECTION | 19 |
-| Open Redirect | CLIENTSIDE | 20 |
-| Clickjacking | CLIENTSIDE | 21 |
-| Smuggling | INJECTION | 22 |
-| Cache Poisoning | INJECTION | 23 |
-| Cache Deception | INJECTION | 24 |
-| CORS | CLIENTSIDE | 25 |
-| Business Logic | LOGIC | 26 |
-| Race Condition | LOGIC | 27 |
-| Mass Assignment | LOGIC | 28 |
-| Prototype Pollution | CLIENTSIDE | 29 |
-| DOM Clobbering | CLIENTSIDE | 30 |
-| HPP | INJECTION | 31 |
-| GraphQL | INJECTION | 32 |
-| WebSocket | CLIENTSIDE | 33 |
-| API Security | AUTH | 34 |
-| ReDoS | LOGIC | 35 |
-| Subdomain Takeover | RECON | 36 |
-| Dependency Confusion | RECON | 37 |
-| CRLF | INJECTION | 38 |
-| Misconfiguration | INFODISCLOSURE | 39 |
-| LDAP | INJECTION | 40 |
-| XPath | INJECTION | 41 |
-| AI/LLM | AI | 47 |
-| CVE Weaponization | ALL | 48 |
+| SQLi | INJECTION | 6 |
+| NoSQLi | INJECTION | 7 |
+| XSS | CLIENTSIDE | 8 |
+| CSRF | CLIENTSIDE | 9 |
+| SSRF | INJECTION | 10 |
+| XXE | INJECTION | 11 |
+| SSTI | INJECTION | 12 |
+| CMDi | INJECTION | 13 |
+| IDOR | AUTH | 14 |
+| Access Control | AUTH | 15 |
+| Auth/Session | AUTH | 16 |
+| JWT | AUTH | 17 |
+| OAuth | AUTH | 18 |
+| Deserialization | INJECTION | 19 |
+| File Upload | CLIENTSIDE | 20 |
+| LFI | INJECTION | 21 |
+| RFI | INJECTION | 22 |
+| Open Redirect | CLIENTSIDE | 23 |
+| Clickjacking | CLIENTSIDE | 24 |
+| Smuggling | INJECTION | 25 |
+| Cache Poisoning | INJECTION | 26 |
+| Cache Deception | INJECTION | 27 |
+| CORS | CLIENTSIDE | 28 |
+| Business Logic | LOGIC | 29 |
+| Race Condition | LOGIC | 30 |
+| Mass Assignment | LOGIC | 31 |
+| Prototype Pollution | CLIENTSIDE | 32 |
+| DOM Clobbering | CLIENTSIDE | 33 |
+| HPP | INJECTION | 34 |
+| GraphQL | INJECTION | 35 |
+| WebSocket | CLIENTSIDE | 36 |
+| API Security | AUTH | 37 |
+| ReDoS | LOGIC | 38 |
+| Subdomain Takeover | RECON | 39 |
+| Dependency Confusion | RECON | 40 |
+| CRLF | INJECTION | 41 |
+| Misconfiguration | INFODISCLOSURE | 42 |
+| LDAP | INJECTION | 43 |
+| XPath | INJECTION | 44 |
+| Chain Engine | CHAIN | 45 |
+| CI/CD | DEVOPS | 49 |
+| AI/LLM | AI | 50 |
+| CVE Weaponization | ALL | 3 |
 
 ### When Stuck
 1. Check wiki for matching technique

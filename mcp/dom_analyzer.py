@@ -26,16 +26,13 @@ Usage:
   python3 mcp/dom_analyzer.py --stdin  # reads JSON from stdin
 """
 
-import sys
+import argparse
+import hashlib
 import json
 import os
 import re
-import argparse
-import hashlib
+import sys
 from html.parser import HTMLParser
-from typing import Optional
-from collections import Counter
-
 
 # ---------------------------------------------------------------------------
 # Lightweight HTML → Structural Skeleton Parser
@@ -80,7 +77,7 @@ class DOMStructuralParser(HTMLParser):
         self._stack: list[int] = []   # indices into skeleton for parent tracking
         self._child_counts: dict[int, int] = {}  # idx → child element count
 
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, Optional[str]]]) -> None:
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         normalized_attrs = self._normalize_attrs(attrs)
         idx = len(self.skeleton)
         self.skeleton.append((tag.lower(), frozenset(normalized_attrs), 0))
@@ -117,7 +114,7 @@ class DOMStructuralParser(HTMLParser):
         # fingerprint we ignore text entirely.
         pass
 
-    def _normalize_attrs(self, attrs: list[tuple[str, Optional[str]]]) -> set[str]:
+    def _normalize_attrs(self, attrs: list[tuple[str, str | None]]) -> set[str]:
         """Keep only structurally relevant attribute keys. Strip transient values."""
         keep: set[str] = set()
         for key, value in attrs:
@@ -155,11 +152,11 @@ def parse_structural_skeleton(html: str) -> list[tuple[str, frozenset, int]]:
     parser = DOMStructuralParser()
     try:
         parser.feed(cleaned)
-    except Exception:
+    except Exception:  # noqa: BLE001, S110 - best-effort: malformed HTML yields partial skeleton
         pass  # best-effort: malformed HTML yields partial skeleton
     try:
         parser.close()
-    except Exception:
+    except Exception:  # noqa: BLE001, S110 - finalize partial skeleton on any parse error
         pass
     return parser.finalize()
 

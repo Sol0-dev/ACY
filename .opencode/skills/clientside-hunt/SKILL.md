@@ -574,7 +574,7 @@ ORDER (PortSwigger WebSocket Academy + PayloadsAllTheThings + aw-junaid ingest 2
 **0. Handshake authentication - does the ticket/token even matter?**
 ```python
 # python3 websockets: connect with NO creds, GARBAGE creds, and VALID creds
-# If all three yield the same welcome -> ticket is decorative = auth bypass (bumba.global confirmed)
+# If all three yield the same welcome -> ticket is decorative = auth bypass (confirmed on live engagement)
 import asyncio, websockets
 async def t():
     for tk in ['', 'garbage-ticket-123', 'VALID_TICKET']:

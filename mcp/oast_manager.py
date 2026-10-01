@@ -21,17 +21,15 @@ Usage:
   python3 mcp/oast_manager.py --action cleanup --ttl-hours 24
 """
 
-import sys
+import argparse
+import fcntl
 import json
 import os
-import time
-import argparse
-import hashlib
-import fcntl
 import tempfile
-import shutil
+import time
 from datetime import datetime, timezone
 from urllib.parse import urljoin
+
 
 # ---------------------------------------------------------------------------
 # Path resolution — works regardless of CWD
@@ -62,7 +60,7 @@ DEFAULT_TTL_HOURS = 48
 def _acquire_lock(timeout: float = 5.0) -> bool:
     """Acquire an exclusive advisory lock on the registry lock file."""
     os.makedirs(os.path.dirname(LOCK_PATH), exist_ok=True)
-    lock_fd = open(LOCK_PATH, "w")
+    lock_fd = open(LOCK_PATH, "w")  # noqa: SIM115 - fd must stay open while flock held
     deadline = time.time() + timeout
     while time.time() < deadline:
         try:
@@ -77,7 +75,7 @@ def _acquire_lock(timeout: float = 5.0) -> bool:
 def _release_lock() -> None:
     """Release the lock file if it exists. Best-effort."""
     try:
-        lock_fd = open(LOCK_PATH, "w")
+        lock_fd = open(LOCK_PATH, "w")  # noqa: SIM115 - matching fd style for flock unlock path
         fcntl.flock(lock_fd, fcntl.LOCK_UN)
         lock_fd.close()
     except OSError:
