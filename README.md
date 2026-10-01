@@ -257,6 +257,61 @@ See `opencode.jsonc` for full configuration options including Burp Suite integra
 
 ---
 
+## Knowledge Ingest Workflow — Raw → Wiki → Skills
+
+The core feedback loop that makes acy smarter with every session. Ingest a source document (`raw/`), distill it into a wiki technique note, then weave the new pattern into the matching skill **additively** — old content is never removed, new knowledge is appended alongside it. Run the wiki/skill lint after every update.
+
+```
+raw/ (source doc, immutable)
+  → wiki/techniques/{note}.md   (YAML frontmatter: id, date, type, status, confidence, tags, links)
+  → .opencode/skills/{base}-{discovery|hunt|reproduce}/SKILL.md   (ADDITIVE refine, never delete)
+  → verify zero-loss (git diff shows only added lines)
+  → lint wiki + skills
+```
+
+### Sample Prompts
+
+```
+"ingest raw/SSRF.md into wiki"
+    → Create wiki/techniques/ssrf.md with frontmatter; link from wiki/index.md
+
+"add the new technique from wiki/techniques/xxe.md to the injection skills
+ without removing anything"
+    → Weave new content INTO the existing DISCOVERY/HUNT/REPRODUCE structure.
+      Preserve every existing line. New knowledge complements, never displaces.
+
+"update clientside-hunt with the CSWSH pattern from the wiki, additive only,
+ then show me git diff to confirm zero content loss"
+    → Append/merge new payloads + checks; verify no removed content lines.
+
+"ingest this: {paste writeup / CVE details} → wiki technique note → weave into
+ the matching skill additively → lint"
+    → Full pipeline: raw → wiki → skill (additive) → lint.
+
+"add CVE-XXXX-XXXXX to the CVE_QUEUE and the matching skill hunt block,
+ keep all existing content"
+    → Version→CVE mapping + additive skill update.
+
+"lint the wiki and skills"
+    → Verify YAML frontmatter (id, date, type, status, confidence, tags, links),
+      balanced code fences, no broken wiki links, registry counts match,
+      and every skill file still parses cleanly.
+
+"check skill registry vs .opencode/skills for missing/extra entries"
+    → Compare skill_registry.json bases/files/phases against actual skill files.
+```
+
+### Additive Refinement Rules (from AGENTS.md)
+
+1. **Preserve Everything** — every existing line/block/payload in a skill stays. Prior content is the floor.
+2. **Refine, Don't Append-Disconnect** — weave new knowledge into the existing structure, mixing old + new technique + fresh payloads into one flow (update the `ORDER` line at the top).
+3. **Verify Zero Loss** — before saving, `git diff` the skill and confirm no removed content lines (headings may be re-titled; body content may NOT be removed).
+4. **Keep References** — preserve original tool invocations and script paths; add new tooling alongside.
+5. **Header Hygiene** — convert emdashes (—) to plain hyphens (-) in edited sections.
+6. **Verify After Edit** — re-check fences are balanced, no orphaned code blocks, then lint.
+
+---
+
 ## Directory Conventions
 
 | Content | Location | Rule |
