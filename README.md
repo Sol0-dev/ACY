@@ -1,4 +1,4 @@
-# acy - Agentic Security Research Orchestrator
+# acy - Multiple advance AI Agent Framework for Agentic Security Research 
 
 **Version**: v4.3 | **Platform**: [opencode](https://opencode.ai) | **License**: MIT
 
